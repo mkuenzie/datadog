@@ -4,7 +4,7 @@ A [Mythic](https://github.com/its-a-feature/Mythic) C2 Profile that allows agent
 
 ## Installation
 ```
-sudo ./mythic-cli install datadog https://github.com/mkuenzie/datadog
+sudo ./mythic-cli install github https://github.com/mkuenzie/datadog
 ```
 
 ## Setup
