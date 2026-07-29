@@ -1,4 +1,4 @@
-BINARY_NAME?=mythic_datadog_server
+BINARY_NAME?=main
 DEBUG_LEVEL?="debug"
 RABBITMQ_HOST?="127.0.0.1"
 RABBITMQ_PASSWORD?="PqR9XJ957sfHqcxj6FsBMj4p"
