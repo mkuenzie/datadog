@@ -47,6 +47,9 @@ var client = &http.Client{
 }
 
 func Initialize(config config) *DatadogClient {
+	if config.Debug {
+		logging.UpdateLogToStdout("debug")
+	}
 	return &DatadogClient{
 		apiClient: datadogcases.NewClient(config.Region, config.ApiKey, config.AppKey),
 		debug:     config.Debug,
@@ -80,7 +83,7 @@ func chunkData(data string) ([]string, error) {
 	return comments, nil
 }
 
-func (d *DatadogClient) createCase(ctx context.Context, projectId string, data string) (string, error) {
+func (d *DatadogClient) createResponseCase(ctx context.Context, projectId string, parentCaseId string, data string) (string, error) {
 	typeID := caseTypeID
 	title := fmt.Sprintf("msg_%d", time.Now().Unix())
 	caseId, httpResponse, err := d.apiClient.CreateCase(ctx, title, typeID, projectId)
@@ -98,6 +101,7 @@ func (d *DatadogClient) createCase(ctx context.Context, projectId string, data s
 			return caseId, err
 		}
 	}
+	d.apiClient.LinkCase(ctx, caseId, parentCaseId)
 	d.apiClient.UpdateCasePriority(ctx, caseId, datadogcases.CasePriorityP5)
 	return caseId, nil
 }
@@ -198,7 +202,7 @@ func (d *DatadogClient) handleCase(ctx context.Context, projectId string, agentC
 		logging.LogError(err, "closing case failed", "response", httpResponse, "case_id", agentCase.ID, "project_id", projectId)
 	}
 
-	caseId, err := d.createCase(ctx, projectId, string(mythicResponse))
+	caseId, err := d.createResponseCase(ctx, projectId, agentCase.ID, string(mythicResponse))
 	if err != nil {
 		logging.LogError(err, "failed to create case for mythic response", "project_id", projectId)
 	}
@@ -232,6 +236,7 @@ func (d *DatadogClient) poll(ctx context.Context) {
 }
 
 func Start(client *DatadogClient) {
+
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
