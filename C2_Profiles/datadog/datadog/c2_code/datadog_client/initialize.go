@@ -213,7 +213,7 @@ func (d *DatadogClient) poll(ctx context.Context) {
 
 	projects, err := d.apiClient.GetProjects(ctx)
 	if err != nil {
-		logging.LogInfo("no projects retrieved")
+		logging.LogError(err, "no projects retrieved")
 	}
 	agentCases := []datadogcases.Case{}
 	for _, project := range projects {
