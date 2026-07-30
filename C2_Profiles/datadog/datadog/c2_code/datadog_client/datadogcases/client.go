@@ -213,6 +213,33 @@ func searchCasesQuery(options SearchOptions) url.Values {
 	return query
 }
 
+func (client *Client) LinkCase(ctx context.Context, childCaseId string, parentCaseId string) error {
+	body := struct {
+		Data struct {
+			Attributes struct {
+				ChildEntityId    string `json:"child_entity_id"`
+				ChildEntityType  string `json:"child_entity_type"`
+				ParentEntityId   string `json:"parent_entity_id"`
+				ParentEntityType string `json:"parent_entity_type"`
+				Relationship     string `json:"relationship"`
+			} `json:"attributes"`
+			Type string `json:"type"`
+		} `json:"data"`
+	}{}
+	body.Data.Attributes.ChildEntityId = childCaseId
+	body.Data.Attributes.ChildEntityType = CaseTypeCase
+	body.Data.Attributes.ParentEntityId = parentCaseId
+	body.Data.Attributes.ParentEntityType = CaseTypeCase
+	body.Data.Attributes.Relationship = "RELATES_TO"
+	body.Data.Type = "link"
+
+	_, err := client.do(ctx, http.MethodPost, "/api/v2/cases/link", nil, body, nil)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (client *Client) CreateCase(ctx context.Context, title string, typeID string, projectID string) (string, *http.Response, error) {
 	body := struct {
 		Data struct {
