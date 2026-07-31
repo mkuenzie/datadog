@@ -107,7 +107,7 @@ func (d *DatadogClient) searchProjectCases(ctx context.Context, projectId string
 		PageSize:   caseSearchPageSize,
 		PageNumber: pageNumber,
 		SortField:  datadogcases.SortFieldCreatedAt,
-		Filter:     fmt.Sprintf("project:%s status_group:%s", projectId, datadogcases.CaseStatusInProgress),
+		Filter:     fmt.Sprintf("project:%s&status_group:%s", projectId, datadogcases.CaseStatusInProgress),
 		SortAsc:    true,
 	})
 }
@@ -220,6 +220,7 @@ func (d *DatadogClient) poll(ctx context.Context) {
 			if err != nil {
 				logging.LogError(err, "Searching cases failed", "response", httpResponse, "projectId", project.ID, "pageNumber", pageNumber)
 			}
+			logging.LogInfo("project case search completed", "projectId", project.ID, "pageNumber", pageNumber, "casesFound", len(agentCasesResponse.Data))
 			agentCases = append(agentCases, agentCasesResponse.Data...)
 			if agentCasesResponse.Meta.Page.Current == agentCasesResponse.Meta.Page.Total {
 				break
