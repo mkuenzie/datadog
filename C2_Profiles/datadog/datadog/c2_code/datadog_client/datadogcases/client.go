@@ -367,7 +367,7 @@ func (client *Client) do(ctx context.Context, method string, path string, query 
 		if readErr != nil {
 			return response, readErr
 		}
-		logging.LogDebug("received response", "response", response)
+		logging.LogDebug("received response", "statusCode", response.Status, "body", string(responseBody))
 		if response.StatusCode == http.StatusTooManyRequests && attempt < maxRateLimitRetries {
 			if err := client.waitRateLimit(ctx, rateLimitDelay(response, attempt)); err != nil {
 				return response, err
