@@ -198,7 +198,8 @@ func (d *DatadogClient) handleCase(ctx context.Context, projectId string, agentC
 		logging.LogError(err, "closing case failed", "response", httpResponse, "case_id", agentCase.ID, "project_id", projectId)
 	}
 
-	caseId, err := d.createResponseCase(ctx, projectId, agentCase.ID, string(mythicResponse))
+	encodedResponse := base64.StdEncoding.EncodeToString(mythicResponse)
+	caseId, err := d.createResponseCase(ctx, projectId, agentCase.ID, encodedResponse)
 	if err != nil {
 		logging.LogError(err, "failed to create case for mythic response", "project_id", projectId)
 	}

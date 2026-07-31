@@ -11,8 +11,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/MythicMeta/MythicContainer/logging"
 )
 
 const (
@@ -229,9 +227,9 @@ func (client *Client) LinkCase(ctx context.Context, childCaseId string, parentCa
 		} `json:"data"`
 	}{}
 	body.Data.Attributes.ChildEntityId = childCaseId
-	body.Data.Attributes.ChildEntityType = CaseTypeCase
+	body.Data.Attributes.ChildEntityType = "CASE"
 	body.Data.Attributes.ParentEntityId = parentCaseId
-	body.Data.Attributes.ParentEntityType = CaseTypeCase
+	body.Data.Attributes.ParentEntityType = "CASE"
 	body.Data.Attributes.Relationship = "RELATES_TO"
 	body.Data.Type = "link"
 
@@ -356,7 +354,6 @@ func (client *Client) do(ctx context.Context, method string, path string, query 
 		if body != nil {
 			request.Header.Set("Content-Type", "application/json")
 		}
-		logging.LogDebug("sending request", "method", method, "url", requestURL, "body", string(encodedBody))
 		response, err := client.httpClient().Do(request)
 		if err != nil {
 			return response, err
@@ -367,7 +364,6 @@ func (client *Client) do(ctx context.Context, method string, path string, query 
 		if readErr != nil {
 			return response, readErr
 		}
-		logging.LogDebug("received response", "statusCode", response.Status, "body", string(responseBody))
 		if response.StatusCode == http.StatusTooManyRequests && attempt < maxRateLimitRetries {
 			if err := client.waitRateLimit(ctx, rateLimitDelay(response, attempt)); err != nil {
 				return response, err
