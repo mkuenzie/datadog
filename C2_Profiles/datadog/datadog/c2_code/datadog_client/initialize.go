@@ -107,7 +107,7 @@ func (d *DatadogClient) searchProjectCases(ctx context.Context, projectId string
 		PageSize:   caseSearchPageSize,
 		PageNumber: pageNumber,
 		SortField:  datadogcases.SortFieldCreatedAt,
-		Filter:     fmt.Sprintf("project:%s&status_group:%s", projectId, datadogcases.CaseStatusInProgress),
+		Filter:     fmt.Sprintf("project:%s AND status_group:%s", projectId, datadogcases.CaseStatusInProgress),
 		SortAsc:    true,
 	})
 }
