@@ -47,12 +47,8 @@ var client = &http.Client{
 }
 
 func Initialize(config config) *DatadogClient {
-	if config.Debug {
-		logging.UpdateLogToStdout("debug")
-	}
 	return &DatadogClient{
 		apiClient: datadogcases.NewClient(config.Region, config.ApiKey, config.AppKey),
-		debug:     config.Debug,
 	}
 
 }
@@ -215,9 +211,11 @@ func (d *DatadogClient) poll(ctx context.Context) {
 	if err != nil {
 		logging.LogError(err, "no projects retrieved")
 	}
+	logging.LogDebug("retrieved projects", "count", len(projects))
 	agentCases := []datadogcases.Case{}
 	for _, project := range projects {
 		for pageNumber := 1; pageNumber <= maxCaseSearchPages; pageNumber++ {
+			logging.LogInfo("searching project for cases", "projectId", project.ID, "pageNumber", pageNumber)
 			agentCasesResponse, httpResponse, err := d.searchProjectCases(ctx, project.ID, pageNumber)
 			if err != nil {
 				logging.LogError(err, "Searching cases failed", "response", httpResponse, "projectId", project.ID, "pageNumber", pageNumber)
@@ -229,6 +227,7 @@ func (d *DatadogClient) poll(ctx context.Context) {
 		}
 		for _, agentCase := range agentCases {
 			if agentCase.Attributes.Priority == datadogcases.CasePriorityP5 { // P5 indicates write is completed
+				logging.LogInfo("processing case", "case_id", agentCase.ID, "project_id", project.ID)
 				go d.handleCase(ctx, project.ID, agentCase)
 			}
 		}
