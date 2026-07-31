@@ -10,7 +10,6 @@ import (
 )
 
 type config struct {
-	Debug  bool   `json:"debug"`
 	AppKey string `json:"app_key"`
 	ApiKey string `json:"api_key"`
 	Region string `json:"region"`
