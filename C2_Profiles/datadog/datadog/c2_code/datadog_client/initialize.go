@@ -216,7 +216,6 @@ func (d *DatadogClient) poll(ctx context.Context) {
 	agentCases := []datadogcases.Case{}
 	for _, project := range projects {
 		for pageNumber := 1; pageNumber <= maxCaseSearchPages; pageNumber++ {
-			logging.LogInfo("searching project for cases", "projectId", project.ID, "pageNumber", pageNumber)
 			agentCasesResponse, httpResponse, err := d.searchProjectCases(ctx, project.ID, pageNumber)
 			if err != nil {
 				logging.LogError(err, "Searching cases failed", "response", httpResponse, "projectId", project.ID, "pageNumber", pageNumber)
@@ -241,7 +240,7 @@ func Start(client *DatadogClient) {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	ticker := time.NewTicker(5 * time.Second)
+	ticker := time.NewTicker(30 * time.Second)
 	defer ticker.Stop()
 
 	for {
