@@ -21,7 +21,7 @@ sequenceDiagram
     A ->>+ G: Sets case to P5 priority to indicate write is complete
     M ->>+ G: Polls for all in progress cases with P5 priority 
     M ->>+ G: Reads Checkin from comment(s) and closes case
-    M ->>+ G: Creates a open case and writes Checkin Response to comment(s)
+    M ->>+ G: Creates a open case, links to agent case and writes Checkin Response to comment(s)
     M ->>+ G: Sets case to P5 priority to indicate write is complete
     A ->>+ G: Polls for open cases with P5 priority
     A ->>+ G: Reads Checkin Response and closes case

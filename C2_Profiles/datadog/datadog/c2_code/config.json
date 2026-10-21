@@ -1,5 +1,6 @@
 {
     "app_key": "",
     "api_key": "",
-    "region": "us1"
+    "region": "us1",
+    "poll_interval": 10
 }
